@@ -14,9 +14,9 @@ Document at least 3 bugs you found. Add rows as needed.
 
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| | | | |
-| | | | |
-| | | | |
+|Guess of 50 | Go HIGHER! | Go LOWER! | None |
+|Press New Game | Start New Game | New game is started on back end, but the player can't play. | None |
+| Change difficulty | Change difficulty to the chosen difficulty. | Difficulty remains on normal. | None |
 
 ---
 
