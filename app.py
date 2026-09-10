@@ -1,16 +1,7 @@
 import random
 import streamlit as st
 
-from logic_utils import check_guess
-
-def get_range_for_difficulty(difficulty: str):
-    if difficulty == "Easy":
-        return 1, 20
-    if difficulty == "Normal":
-        return 1, 100
-    if difficulty == "Hard":
-        return 1, 50
-    return 1, 100
+from logic_utils import check_guess, get_range_for_difficulty
 
 
 def parse_guess(raw: str):
@@ -59,6 +50,7 @@ difficulty = st.sidebar.selectbox(
     "Difficulty",
     ["Easy", "Normal", "Hard"],
     index=1,
+    key="difficulty",
 )
 
 attempt_limit_map = {
@@ -73,25 +65,32 @@ low, high = get_range_for_difficulty(difficulty)
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 
-if "secret" not in st.session_state:
+
+def start_new_game():
+    """Reset every piece of game state for the currently selected difficulty."""
     st.session_state.secret = random.randint(low, high)
-
-if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
-
-if "score" not in st.session_state:
+    st.session_state.attempts = 0
     st.session_state.score = 0
+    st.session_state.status = "playing"
+    st.session_state.history = []
+    st.session_state.game_difficulty = difficulty
+
 
 if "status" not in st.session_state:
-    st.session_state.status = "playing"
+    start_new_game()
 
-if "history" not in st.session_state:
-    st.session_state.history = []
+# The selected difficulty only takes effect once the game state is rebuilt for
+# it, so a change in the sidebar has to start a fresh game.
+if st.session_state.game_difficulty != difficulty:
+    start_new_game()
 
 st.subheader("Make a guess")
 
+if st.session_state.pop("show_new_game_message", False):
+    st.success("New game started.")
+
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -115,11 +114,11 @@ with col2:
 with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
-# FIXME: Logic breaks here
 if new_game:
-    st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
-    st.success("New game started.")
+    start_new_game()
+    # The rest of the page was already drawn with the old state, so rerun and
+    # let the banner above report the reset on the fresh pass.
+    st.session_state.show_new_game_message = True
     st.rerun()
 
 if st.session_state.status != "playing":
