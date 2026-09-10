@@ -39,6 +39,7 @@ I tested the fixes by playing the game and testing that specific feature.
   and what it showed you about your code.
   After I used AI to fix the new game feature, I started a new game, won the game, and started another new game. The solution worked. The bugs hampered the function of the entire game, as it ran better with a few fixed.
 - Did AI help you design or understand any tests? How?
+The AI helped design the tests, but it frequently made mistakes until the terms were simplified.
 
 ---
 
