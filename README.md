@@ -29,6 +29,7 @@ It wrote the code, ran away, and now the game is unplayable.
 - [ ] Detail which bugs you found.
 - [ ] Explain what fixes you applied.
 
+The purpose of the game is to guess a secret number. However, this game had several bugs. When I played it, the hint system was inaccurate, new games couldn't be started, and the difficulty couldn't change. The hints were reversed, new games were properly reset, and the difficulty logic was refactored.
 ## 📸 Demo Walkthrough
 
 Describe your fixed game in numbered steps so a reader can follow along without watching a video:
