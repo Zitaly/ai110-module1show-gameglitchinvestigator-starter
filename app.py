@@ -65,7 +65,7 @@ low, high = get_range_for_difficulty(difficulty)
 st.sidebar.caption(f"Range: {low} to {high}")
 st.sidebar.caption(f"Attempts allowed: {attempt_limit}")
 
-
+#FIX: Properly resets games.
 def start_new_game():
     """Reset every piece of game state for the currently selected difficulty."""
     st.session_state.secret = random.randint(low, high)

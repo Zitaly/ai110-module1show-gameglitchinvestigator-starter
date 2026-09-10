@@ -1,3 +1,4 @@
+#FIX: Refactored into logic_utils.py
 def get_range_for_difficulty(difficulty: str):
     """Return (low, high) inclusive range for a given difficulty."""
     if difficulty == "Easy":
@@ -20,7 +21,7 @@ def parse_guess(raw: str):
     """
     raise NotImplementedError("Refactor this function from app.py into logic_utils.py")
 
-
+#FIX: Refactored into logic_utils.py
 def check_guess(guess, secret):
     """
     Compare guess to secret and return (outcome, message).
