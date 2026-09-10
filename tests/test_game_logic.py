@@ -39,3 +39,24 @@ def test_guess_above_secret_hints_lower():
     outcome, message = check_guess(50, 20)
     assert outcome == "Too High"
     assert "LOWER" in message
+
+
+def test_difficulty_selects_matching_range():
+    # Changing the difficulty has to change the guessing range with it. The app
+    # used to hold every game at the Normal range no matter what was selected.
+    from logic_utils import get_range_for_difficulty
+
+    expected_ranges = {
+        "Easy": (1, 20),
+        "Normal": (1, 100),
+        "Hard": (1, 50),
+    }
+
+    for difficulty, bounds in expected_ranges.items():
+        assert get_range_for_difficulty(difficulty) == bounds
+
+    # Each difficulty is distinct, so a stale selection cannot pass as another.
+    assert len(set(expected_ranges.values())) == len(expected_ranges)
+
+    # An unrecognized difficulty falls back to the Normal range.
+    assert get_range_for_difficulty("Impossible") == (1, 100)
