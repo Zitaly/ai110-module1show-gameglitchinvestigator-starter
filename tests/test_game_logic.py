@@ -5,7 +5,7 @@ from pathlib import Path
 # which directory pytest is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from logic_utils import check_guess
+from logic_utils import check_guess, parse_guess, update_score
 
 
 def test_winning_guess():
@@ -60,3 +60,64 @@ def test_difficulty_selects_matching_range():
 
     # An unrecognized difficulty falls back to the Normal range.
     assert get_range_for_difficulty("Impossible") == (1, 100)
+
+
+def test_parse_guess_accepts_plain_and_padded_numbers():
+    assert parse_guess("42") == (True, 42, None)
+    assert parse_guess("  42  ") == (True, 42, None)
+    assert parse_guess("-7") == (True, -7, None)
+
+
+def test_parse_guess_rejects_empty_input():
+    for raw in (None, "", "   "):
+        ok, value, err = parse_guess(raw)
+        assert not ok
+        assert value is None
+        assert err
+
+
+def test_parse_guess_rejects_decimals():
+    # Regression: "3.9" was truncated to 3, so the game scored a guess the
+    # player never made instead of telling them the input was invalid.
+    ok, value, err = parse_guess("3.9")
+    assert not ok
+    assert value is None
+    assert err
+
+
+def test_parse_guess_rejects_non_numbers():
+    ok, value, err = parse_guess("fifty")
+    assert not ok
+    assert value is None
+    assert err
+
+
+def test_win_on_first_attempt_scores_full_points():
+    # Regression: the old formula treated the first guess as the second, so a
+    # perfect game paid 80 instead of 100.
+    assert update_score(0, "Win", 1) == 100
+
+
+def test_win_points_decay_by_attempt():
+    assert update_score(0, "Win", 2) == 90
+    assert update_score(0, "Win", 3) == 80
+
+
+def test_win_points_floor_at_ten():
+    assert update_score(0, "Win", 20) == 10
+
+
+def test_wrong_guesses_cost_the_same_either_direction():
+    # Regression: "Too High" awarded +5 on even attempts, so overshooting was
+    # sometimes better than undershooting.
+    for attempt in range(1, 6):
+        assert update_score(50, "Too High", attempt) == 45
+        assert update_score(50, "Too Low", attempt) == 45
+
+
+def test_score_never_goes_negative():
+    assert update_score(0, "Too Low", 1) == 0
+
+
+def test_unknown_outcome_leaves_score_alone():
+    assert update_score(37, "Sideways", 2) == 37
